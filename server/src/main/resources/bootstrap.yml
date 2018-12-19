@@ -7,8 +7,6 @@ spring:
         enabled: true
         service-id: CONFIG
       profile: dev
-  rabbitmq:
-    host: 192.168.99.101
 eureka:
   client:
     service-url:
