@@ -38,7 +38,15 @@ public class HystrixController {
 //    })
 
     // 4.使用配置文件中的配置项进行配置
-    @HystrixCommand
+//    @HystrixCommand
+
+
+    @HystrixCommand(commandProperties = {
+        @HystrixProperty(name = "circuitBreaker.enabled", value = "true"),                      // 设置熔断
+        @HystrixProperty(name = "circuitBreaker.requestVolumeThreshold", value = "10"),         // 断路器的最小请求数
+        @HystrixProperty(name = "circuitBreaker.sleepWindowInMilliseconds", value = "10000"),   // 休眠时间窗口10秒
+        @HystrixProperty(name = "circuitBreaker.errorThresholdPercentage", value = "60")        // 错误比率
+    })
     @GetMapping("/getProductInfoList")
     public String getProductInfoList(@RequestParam("number") Integer numbe) {
         if (numbe % 2 == 0) {

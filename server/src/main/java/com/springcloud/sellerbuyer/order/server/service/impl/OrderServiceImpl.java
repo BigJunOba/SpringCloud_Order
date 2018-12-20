@@ -38,6 +38,17 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     private ProductClient productClient;
 
+    /**
+     * 改造成秒杀场景 :
+     *  1.把查询到的商品信息存储到Redis中
+     *  2.下单的时候，要读Redis(需要Redis分布式锁)
+     *  3.判断如果库存够的话，要减库存，并将新值设置进Redis(需要Redis分布式锁)
+     *  4.订单详情入库和总订单入库方面: 如果数据库订单入库异常
+     *      数据库回滚很方便。
+     *      Redis 没有事务回滚的方法，所以需要考虑手动回滚Redis
+     *  5.订单服务创建订单写入数据库，并发送消息。
+     */
+
     @Override
     @Transactional
     public OrderDTO create(OrderDTO orderDTO) {
@@ -49,17 +60,6 @@ public class OrderServiceImpl implements OrderService {
                 .map(OrderDetail::getProductId)
                 .collect(Collectors.toList());
         List<ProductInfoOutput> productInfoList = productClient.listForOrder(productIdList);
-
-        /**
-         * 改造成秒杀场景 :
-         *  1.把查询到的商品信息存储到Redis中
-         *  2.下单的时候，要读Redis(需要Redis分布式锁)
-         *  3.判断如果库存够的话，要减库存，并将新值设置进Redis(需要Redis分布式锁)
-         *  4.订单详情入库和总订单入库方面: 如果数据库订单入库异常
-         *      数据库回滚很方便。
-         *      Redis 没有事务回滚的方法，所以需要考虑手动回滚Redis
-         *  5.订单服务创建订单写入数据库，并发送消息。
-         */
 
         // 2. 计算某一件商品的总价然后加上原来的订单总价
         BigDecimal orderAmount = new BigDecimal(0);
@@ -83,7 +83,6 @@ public class OrderServiceImpl implements OrderService {
                 .map(e -> new DecreaseStockInput(e.getProductId(), e.getProductQuantity()))
                 .collect(Collectors.toList());
         productClient.decreaseStock(decreaseStockInputList);
-
 
         // 4. 写入订单数据库(orderMaster)
         // API 只包含买家姓名、买家电话、买家地址、Openid、商品列表(内部包括商品id和数量)

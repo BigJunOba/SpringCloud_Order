@@ -12,6 +12,11 @@ spring:
         myMessage:
           group: order
           content-type: application/json
+  zipkin:
+    base-url: http://192.168.99.101:9411/
+  sleuth:
+    sampler:
+      percentage: 1
 eureka:
   client:
     service-url:
@@ -31,5 +36,6 @@ hystrix:
 feign:
   hystrix:
     enabled: true
-management:
-  context-path: /
+logging:
+  level:
+    org.springframework.cloud.netflix.feign: debug
