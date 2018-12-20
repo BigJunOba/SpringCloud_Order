@@ -51,4 +51,14 @@ public class OrderController {
         return ResultVOUtil.success(map);
     }
 
+    /**
+     * 完结订单
+     * @param orderId
+     * @return
+     */
+    @PostMapping("/finish")
+    public ResultVO<OrderDTO> finish(@RequestParam("orderId") String orderId) {
+        return ResultVOUtil.success(orderService.finish(orderId));
+    }
+
 }
