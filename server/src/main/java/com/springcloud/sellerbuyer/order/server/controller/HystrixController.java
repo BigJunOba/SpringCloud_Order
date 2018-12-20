@@ -29,13 +29,16 @@ public class HystrixController {
 //            @HystrixProperty(name = "execution.isolation.thread.timeoutInMilliseconds", value = "3000")
 //    })
 
-    // 3.服务熔断
-    @HystrixCommand(commandProperties = {
-            @HystrixProperty(name = "circuitBreaker.enabled", value = "true"),                      // 设置熔断
-            @HystrixProperty(name = "circuitBreaker.requestVolumeThreshold", value = "10"),         // 断路器的最小请求数
-            @HystrixProperty(name = "circuitBreaker.sleepWindowInMilliseconds", value = "10000"),   // 休眠时间窗口10秒
-            @HystrixProperty(name = "circuitBreaker.errorThresholdPercentage", value = "60")        // 错误比率
-    })
+//    // 3.服务熔断
+//    @HystrixCommand(commandProperties = {
+//            @HystrixProperty(name = "circuitBreaker.enabled", value = "true"),                      // 设置熔断
+//            @HystrixProperty(name = "circuitBreaker.requestVolumeThreshold", value = "10"),         // 断路器的最小请求数
+//            @HystrixProperty(name = "circuitBreaker.sleepWindowInMilliseconds", value = "10000"),   // 休眠时间窗口10秒
+//            @HystrixProperty(name = "circuitBreaker.errorThresholdPercentage", value = "60")        // 错误比率
+//    })
+
+    // 4.使用配置文件中的配置项进行配置
+    @HystrixCommand
     @GetMapping("/getProductInfoList")
     public String getProductInfoList(@RequestParam("number") Integer numbe) {
         if (numbe % 2 == 0) {
